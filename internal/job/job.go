@@ -1,4 +1,4 @@
-package internal
+package job
 
 import (
 	"time"
@@ -11,6 +11,8 @@ type Job struct {
 	Status             string
 	Payload            []byte
 	VisibilityDeadline time.Time
+	StartTime          time.Time
+	Retries            int
 }
 
 func Create_job(incoming_data []byte) *Job {
@@ -18,7 +20,9 @@ func Create_job(incoming_data []byte) *Job {
 		ID:                 uuid.New().String(),
 		Status:             "pending",
 		Payload:            incoming_data,
-		VisibilityDeadline: time.Now().Add(30 * time.Second),
+		VisibilityDeadline: time.Time{},
+		StartTime:          time.Time{},
+		Retries:            3,
 	}
 	return genereated_job
 }

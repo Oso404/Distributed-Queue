@@ -6,13 +6,14 @@ import (
 	"log"
 	"net/http"
 
+	job "github.com/Oso404/distributed-queue/internal/job"
 	internal "github.com/Oso404/distributed-queue/internal/queue"
 )
 
-var queue *internal.Queue
+var dq *internal.Queue
 
 func main() {
-	queue := internal.Create_Queue("Queue1")
+	dq := internal.Create_Queue("Queue1")
 
 	/*
 		HandleFunc registers a handler function and runs whenever someone visits URL path (e.g."/")
@@ -42,12 +43,10 @@ func main() {
 			return
 		}
 		defer r.Body.Close()
-		job := internal.Create_job(body)
-		job.Status = "pending"
-		queue.Jobs[job.ID] = job
-		queue.PendingQueue = append(queue.PendingQueue, job.ID)
-		fmt.Println(queue.PendingQueue)
-		fmt.Println("Current jobs:", queue.Jobs)
+		job := job.Create_job(body)
+		dq.Enqueue(job)
+		fmt.Println("Pending queue", dq.PendingQueue)
+		fmt.Println("All jobs", dq.Jobs)
 		// /*
 		// 	data will contain all of information passed in request (type and payload)
 		// 	type(string) : (string)
