@@ -22,7 +22,7 @@ It provides:
 - HTTP and REST (API endpoints for interacting qwith the queue)
 - Concurrency Primitives (Mutex, Goroutines for safe parallel processing)
 
-# Skills and Learnings
+## Skills and Learnings
 - Go concurrency and synchronization (mutexes, goroutines)
 - Distributed system design
 - API design and RESTful service implementation
