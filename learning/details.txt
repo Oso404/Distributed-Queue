@@ -1,0 +1,26 @@
+Things I have Learned so far....
+1. It's best to plan out (sketches, diagrams) how you want your system to look like. It isn't always going to stay as sketched there may be changes 
+along the way you might want to make. Going in head on straight to coding doesn't help out at all. You'll get lost and try to map things out in your head. 
+2. Go languages in general (important keywords: defer, go)
+3. Concurrency Issues (Race Conditions, Starvation, Deadlocks)
+
+A race condition is when two concurrent operations access the same data and at least one modifies the data and the final result depending on which of the two operations
+finish. In order to prevent race conditions we need to prevent other goroutines from accessing data that a goroutine already has acquired. In go we use sync.Mutex.
+sync.Mutex prevents race conditions by "locking" the data (critical section). 
+eg. 
+var mu sync.Mutex 
+mu.Lock() -> if no goroutine has lock current goroutine fetches lock and in essence "locks" the entry to the code 
+//code -> if a goroutine tries to access this code while another goroutine has it locked itll have to wait for the other goroutine to "unlock" it
+mu.Unlock() -> goroutine with the "lock" will "unlock" and give access to other goroutines waiting to use the code 
+Starvation occurs when an operation in a queue is unable to reach the beginning because higher priority operations are constantly cutting
+Deadlocks happen when two or more goroutines wait on each other to release resources, and none of them can proceed...basically everyone freezes 
+The best ways to avoid deadlocks is to avoid nested locks and unlocking in reverse order locks were locked 
+
+4. I briefly went over handler functions and will continue to work on the RESTful API aspect as i implement more features to this project 
+5. Working with pointers and addresses became surprisingly simpler after my progress so far; previously I used to wonder what should go in function arguments
+but as of right now I can confidently answer 
+6. Queue mechanics in terms of the structs (job, worker) Ive created. Its important to know what kinds of data each struct should contain. I ended up needing 
+workerID in queue class (at first I had no reason to keep workerID but i ended up using it in queue class to validate many things)
+7. Error handling in Go is very interesting. Go doesnt believe in exceptions so we must throw errors whenever we see there may be a potential bug. 
+8. With (7) in mind I realized its important to know what a go function returns. Sounds absurd at first but I learned Go can return multiple values 
+including Error
