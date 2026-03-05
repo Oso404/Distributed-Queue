@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -62,6 +63,29 @@ func (q *Queue) Dequeue() *job.Job {
 	job.VisibilityDeadline = time.Now().Add(30 * time.Second)
 
 	return job
+}
+
+func (q *Queue) HandleJobCompletion(j *job.Job, workerID string) {
+	q.Mutex.Lock()
+	defer q.Mutex.Unlock()
+	delete(q.ProcessingJobs, j.ID)
+	if j.Status == "completed" {
+		// remove job completely
+		delete(q.Jobs, j.ID)
+		fmt.Printf("Job %s completed by worker %s and removed\n", j.ID, workerID)
+	} else {
+		// failed job
+		j.Retries++
+		if j.Retries > q.MaxRetries {
+			j.Status = "deadletter"
+			q.DeadLetterJobs[j.ID] = j
+			fmt.Printf("Job %s failed too many times → DeadLetter\n", j.ID)
+		} else {
+			j.Status = "pending"
+			q.PendingQueue = append(q.PendingQueue, j.ID)
+			fmt.Printf("Job %s failed by worker %s → retry %d\n", j.ID, workerID, j.Retries)
+		}
+	}
 }
 
 /*

@@ -8,13 +8,17 @@ import (
 
 	job "github.com/Oso404/distributed-queue/internal/job"
 	internal "github.com/Oso404/distributed-queue/internal/queue"
+	worker "github.com/Oso404/distributed-queue/internal/worker"
 )
 
 var dq *internal.Queue
 
 func main() {
 	dq := internal.Create_Queue("Queue1")
-
+	for i := 0; i < 3; i++ {
+		w := worker.Create_Worker()
+		go w.Start(dq)
+	}
 	/*
 		HandleFunc registers a handler function and runs whenever someone visits URL path (e.g."/")
 		HandleFunc takes in URL pattern and function to run when visited
@@ -81,4 +85,5 @@ func main() {
 	fmt.Println("Server listening on :8080")
 	//ListenAndServe runs until we stop it
 	log.Fatal(http.ListenAndServe(":8080", nil))
+
 }
