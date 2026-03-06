@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
+const defaultTries = 0
+
 type Job struct {
 	ID                 string
 	Status             string
@@ -22,7 +24,7 @@ func Create_job(incoming_data []byte) *Job {
 		Payload:            incoming_data,
 		VisibilityDeadline: time.Time{},
 		StartTime:          time.Time{},
-		Retries:            3,
+		Retries:            defaultTries,
 	}
 	return genereated_job
 }

@@ -15,7 +15,7 @@ def send_job(payload):
         print(f"Failed to send job: {payload}, Error: {e}")
 
 def main():
-    num_of_jobs = 10
+    num_of_jobs = 3
     for i in range(num_of_jobs):
         #im sending the same job every time just for testing purposes
         job_payload = {
@@ -27,7 +27,7 @@ def main():
             "random-note": "helloworld"
         }
         send_job(job_payload)
-        time.sleep(random.uniform(0.1, 3.1)) #delay when sending jobs to simulate real life world 
+        time.sleep(random.uniform(0.1, 1.1)) #delay when sending jobs to simulate real life world 
 
 if __name__ == "__main__":
     main()
