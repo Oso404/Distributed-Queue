@@ -37,6 +37,11 @@ func main() {
 			http.Error(w, "Failed to read body", http.StatusInternalServerError)
 			return
 		}
+		//we only accept json fomat for body
+		if r.Header.Get("Content-Type") != "application/json" {
+			http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
+			return
+		}
 		/*
 			r.Body is stream of bytes as http request comes in
 			r.Body is accessible only once thus we can only read it once

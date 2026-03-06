@@ -34,8 +34,8 @@ func Create_Queue(name string) *Queue {
 // Enqueue
 // (q *Queue) serves as "this" keyword in other languages
 func (q *Queue) Enqueue(job *job.Job) {
-	// q.Mutex.Lock()
-	// defer q.Mutex.Unlock()
+	q.Mutex.Lock()
+	defer q.Mutex.Unlock()
 	q.Jobs[job.ID] = job                            //add newly created Job to Jobs map
 	q.PendingQueue = append(q.PendingQueue, job.ID) //add jobID to PendignQueue
 	job.Status = "Pending"                          //change status
@@ -74,7 +74,7 @@ func (q *Queue) HandleJobCompletion(j *job.Job, workerID string) {
 	if j.Status == "completed" {
 		// remove job completely
 		delete(q.Jobs, j.ID)
-		fmt.Printf("Job %s completed by worker %s and removed\n", j.ID, workerID)
+		fmt.Printf("Worker %s completed job %s\n", workerID, j.ID)
 	} else {
 		// failed job
 		fmt.Println(j.ID, "has failed!")
@@ -84,6 +84,7 @@ func (q *Queue) HandleJobCompletion(j *job.Job, workerID string) {
 			q.DeadLetterJobs[j.ID] = j
 			fmt.Printf("Job %s failed too many times → DeadLetter\n", j.ID)
 		} else {
+			fmt.Println("THIS DOESNT EVER RUN!!!!!")
 			j.Status = "pending"
 			q.PendingQueue = append(q.PendingQueue, j.ID)
 			fmt.Printf("Job %s failed by worker %s → retry %d\n", j.ID, workerID, j.Retries)
@@ -95,5 +96,5 @@ func (q *Queue) HandleJobCompletion(j *job.Job, workerID string) {
 Issues
 What if 2 workers try to get same job at the same time? -> mutex
 What if a worker takes too long doing job? -> visiblity deadline
-What if a worker crashes? (What happens to job?)
+What if a worker crashes? (What happens to job?)-> visibility deadline
 */

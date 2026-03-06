@@ -52,19 +52,20 @@ func (worker *Worker) Start(queue *internal.Queue) {
 
 	*/
 	for {
-		j := queue.Dequeue()
+		j := queue.Dequeue() //j is pointer to job
 		if j == nil {
 			//here no job available let worker wait 1 second and ask again
 			time.Sleep(1 * time.Second)
-			fmt.Println("No job available!")
-			fmt.Println(worker.Worker_ID, "resting for one second...")
+			// fmt.Println("No job available for", worker.Worker_ID)
+			// fmt.Println(worker.Worker_ID, "resting for one second...")
 			continue
 		}
 		fmt.Printf("Worker %s got job %s\n", worker.Worker_ID, j.ID)
 		//cant perform actual job rn so will simulate
 		jobDuration := time.Duration(rand.Intn(36)) * time.Second
+		fmt.Println(worker.Worker_ID, "works for", jobDuration)
 		time.Sleep(jobDuration)
-		if jobDuration <= 30*time.Second {
+		if jobDuration <= 25*time.Second {
 			j.Status = "completed"
 		} else {
 			j.Status = "failed"
