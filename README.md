@@ -28,3 +28,7 @@ It provides:
 - API design and RESTful service implementation
 - Cloud-ready architecture with AWS integration potential
 - Thread safe data structures and high-throughput queue management
+
+![System Diagrams](learning/images/dq_gh_1.jpg)
+![System Diagrams](learning/images/dq_gh_2.jpg)
+
