@@ -15,6 +15,7 @@ var dq *internal.Queue
 
 func main() {
 	dq := internal.Create_Queue("Queue1")
+	//create pool of workers
 	for i := 0; i < 3; i++ {
 		w := worker.Create_Worker()
 		go w.Start(dq)
@@ -49,36 +50,6 @@ func main() {
 		defer r.Body.Close()
 		job := job.Create_job(body)
 		dq.Enqueue(job)
-		fmt.Println("Pending queue", dq.PendingQueue)
-		fmt.Println("All jobs", dq.Jobs)
-		// /*
-		// 	data will contain all of information passed in request (type and payload)
-		// 	type(string) : (string)
-		// 	payload(string) : json (string: string)
-		// */
-		// //why string:interface? interface represents any data type
-
-		// var data map[string]interface{}
-		// //Unmarshal([]byte, v any) tries to convert stream of bytes into json
-		// //Unmarshal requires stream of json bytes and pointer to variable (must be pointer to modify variable!)
-		// err = json.Unmarshal(body, &data)
-		// if err != nil {
-		// 	fmt.Println("Invalid JSON:", err)
-		// 	return
-		// }
-		// //check if payload field exists
-		// rawPayload, ok := data["payload"]
-		// if !ok {
-		// 	http.Error(w, "Missing payload field!", http.StatusBadRequest)
-		// 	return
-		// }
-		// //check if payload field contains json object
-		// payload, ok := rawPayload.(map[string]interface{})
-		// if !ok {
-		// 	http.Error(w, "Payload field not JSON object", http.StatusBadRequest)
-		// 	return
-		// }
-		// fmt.Println("Payload map:", payload)
 		w.Write([]byte("Job recieved"))
 	})
 

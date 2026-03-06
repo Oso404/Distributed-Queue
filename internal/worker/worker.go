@@ -56,10 +56,11 @@ func (worker *Worker) Start(queue *internal.Queue) {
 		if j == nil {
 			//here no job available let worker wait 1 second and ask again
 			time.Sleep(1 * time.Second)
+			fmt.Println("No job available!")
+			fmt.Println(worker.Worker_ID, "resting for one second...")
 			continue
 		}
 		fmt.Printf("Worker %s got job %s\n", worker.Worker_ID, j.ID)
-		fmt.Println("======================")
 		//cant perform actual job rn so will simulate
 		jobDuration := time.Duration(rand.Intn(36)) * time.Second
 		time.Sleep(jobDuration)

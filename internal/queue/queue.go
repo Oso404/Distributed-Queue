@@ -31,6 +31,7 @@ func Create_Queue(name string) *Queue {
 	return queue
 }
 
+// Enqueue
 // (q *Queue) serves as "this" keyword in other languages
 func (q *Queue) Enqueue(job *job.Job) {
 	// q.Mutex.Lock()
@@ -65,6 +66,7 @@ func (q *Queue) Dequeue() *job.Job {
 	return job
 }
 
+// HandleJobCompletion will run when Worker finishes job (or after 30 seconds)
 func (q *Queue) HandleJobCompletion(j *job.Job, workerID string) {
 	q.Mutex.Lock()
 	defer q.Mutex.Unlock()
@@ -75,6 +77,7 @@ func (q *Queue) HandleJobCompletion(j *job.Job, workerID string) {
 		fmt.Printf("Job %s completed by worker %s and removed\n", j.ID, workerID)
 	} else {
 		// failed job
+		fmt.Println(j.ID, "has failed!")
 		j.Retries++
 		if j.Retries > q.MaxRetries {
 			j.Status = "deadletter"
