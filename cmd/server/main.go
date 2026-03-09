@@ -16,7 +16,7 @@ var dq *internal.Queue
 func main() {
 	dq := internal.Create_Queue("Queue1")
 	//create pool of workers
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10; i++ {
 		w := worker.Create_Worker()
 		go w.Start(dq)
 	}

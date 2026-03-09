@@ -62,18 +62,21 @@ func (worker *Worker) Start(queue *internal.Queue) {
 			continue
 		}
 		fmt.Printf("Worker %s got job %s\n", worker.Worker_ID, j.ID)
-		//cant perform actual job rn so will simulate
-		jobDuration := time.Duration(rand.Intn(20)) * time.Second
+		//cant perform actual job rn so will simulate with random number
+		jobDuration := time.Duration(rand.Intn(15)) * time.Second
 		fmt.Println(worker.Worker_ID, "works for", jobDuration)
 
 		// time.Sleep(jobDuration)
 
+		//visibility deadline set in dequeue() so we can use that to check if job is still alive
 		ctx_with_deadline, cancel := context.WithDeadline(context.Background(), j.VisibilityDeadline)
 		defer cancel()
 		select {
+		//will we reach deadline before we finish job?
 		case <-ctx_with_deadline.Done():
 			fmt.Println("Job", j.ID, "has exceeded visibility deadline and is considered failed.")
 			j.Status = "failed"
+			//willl job complete before deadline?
 		case <-time.After(jobDuration):
 			fmt.Println("Worker", worker.Worker_ID, "finished job", j.ID)
 			j.Status = "completed"

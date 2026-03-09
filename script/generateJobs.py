@@ -15,7 +15,7 @@ def send_job(payload):
         print(f"Failed to send job: {payload}, Error: {e}")
 
 def main():
-    num_of_jobs = 5
+    num_of_jobs = 100
     for i in range(num_of_jobs):
         #im sending the same job every time just for testing purposes
         job_payload = {
