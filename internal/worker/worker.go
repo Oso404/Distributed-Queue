@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"time"
@@ -62,14 +63,31 @@ func (worker *Worker) Start(queue *internal.Queue) {
 		}
 		fmt.Printf("Worker %s got job %s\n", worker.Worker_ID, j.ID)
 		//cant perform actual job rn so will simulate
-		jobDuration := time.Duration(rand.Intn(36)) * time.Second
+		jobDuration := time.Duration(rand.Intn(20)) * time.Second
 		fmt.Println(worker.Worker_ID, "works for", jobDuration)
-		time.Sleep(jobDuration)
-		if jobDuration <= 25*time.Second {
-			j.Status = "completed"
-		} else {
+
+		// time.Sleep(jobDuration)
+
+		ctx_with_deadline, cancel := context.WithDeadline(context.Background(), j.VisibilityDeadline)
+		defer cancel()
+		select {
+		case <-ctx_with_deadline.Done():
+			fmt.Println("Job", j.ID, "has exceeded visibility deadline and is considered failed.")
 			j.Status = "failed"
+		case <-time.After(jobDuration):
+			fmt.Println("Worker", worker.Worker_ID, "finished job", j.ID)
+			j.Status = "completed"
 		}
+		//rather than if statement i want to check realtime
+		//if statement job can finish and mark as incomplete
+		//i have job.VisibilityDeadline
+
+		// if jobDuration <= 10*time.Second {
+		// 	j.Status = "completed"
+		// } else {
+		// 	j.Status = "failed"
+		// }
+
 		//send job back to queue
 		queue.HandleJobCompletion(j, worker.Worker_ID)
 	}
