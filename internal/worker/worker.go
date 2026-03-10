@@ -15,11 +15,14 @@ import (
 type Worker struct {
 	Worker_ID      string
 	Current_Job_ID string //will be used to track which job worker is currently working on; if empty string then worker is idle
+	Stop_Channel   chan struct{}
 }
 
 func Create_Worker() *Worker {
 	return &Worker{
-		Worker_ID: uuid.New().String(),
+		Worker_ID:      uuid.New().String(),
+		Current_Job_ID: "",
+		Stop_Channel:   make(chan struct{}),
 	}
 }
 
@@ -53,15 +56,23 @@ func (worker *Worker) Start(queue *internal.Queue) {
 
 
 
-	*/
+	// */
 	for {
+
+		select {
+		case <-worker.Stop_Channel:
+			fmt.Printf("Worker %s stopping...\n", worker.Worker_ID)
+			return
+		default:
+		}
+
 		j := queue.Dequeue() //j is pointer to job
 		if j == nil {
 			//here no job available let worker wait 1 second and ask again
 			time.Sleep(1 * time.Second)
+			continue
 			// fmt.Println("No job available for", worker.Worker_ID)
 			// fmt.Println(worker.Worker_ID, "resting for one second...")
-			continue
 		}
 		worker.Current_Job_ID = j.ID
 		// fmt.Printf("Worker %s got job %s\n", worker.Worker_ID, j.ID)
@@ -135,3 +146,8 @@ func (worker *Worker) Start(queue *internal.Queue) {
 // 	//i have to pass the job back to the scheduler
 
 // }
+
+func (worker *Worker) Stop() {
+	close(worker.Stop_Channel) //signal worker to stop by closing the channel
+	//this will triger case <- worker.Stop_Channel in Start() and cause it to return
+}

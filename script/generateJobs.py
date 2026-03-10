@@ -27,7 +27,7 @@ def main():
             "random-note": "helloworld"
         }
         send_job(job_payload)
-        time.sleep(random.uniform(0.1, 1.1)) #delay when sending jobs to simulate real life world 
+        time.sleep(random.uniform(0.1, .2)) #delay when sending jobs to simulate real life world 
 
 if __name__ == "__main__":
     main()

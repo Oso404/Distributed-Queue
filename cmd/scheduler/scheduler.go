@@ -23,6 +23,11 @@ func Create_Scheduler(queue *Q.Queue, pool *pool.Pool) *Scheduler {
 	}
 }
 
+func (s *Scheduler) Start() {
+	//start pool of workers
+
+}
+
 func (s *Scheduler) Check_For_Job() (*J.Job, error) {
 	//start pool of workers
 	/*
@@ -31,17 +36,22 @@ func (s *Scheduler) Check_For_Job() (*J.Job, error) {
 		i need to remove the infinite loop from worker.Start and instead have the scheduler loop ask the pool to
 		start each worker and then have the scheduler loop also monitor the queue for job completions and handle them accordingly
 	*/
-	s.Pool.Start(s.Queue)
+	// s.Pool.Start(s.Queue)
 	//check if there is a job available in the queue
 	for {
 		if s.Queue.JobAvailable() {
 			fmt.Println("Job is available in the queue.")
+			//i should now assign job to worker
 		} else {
 			fmt.Println("No job available in the queue. Checking again in 1 second...")
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(100 * time.Millisecond)
 	}
 
+}
+
+func (s *Scheduler) Handle_Job_Completion() {
+	//will come back to this....
 }
 
 func (s *Scheduler) Review_Availability_Workers() {
@@ -49,6 +59,7 @@ func (s *Scheduler) Review_Availability_Workers() {
 	for _, worker := range sl {
 		if worker.Current_Job_ID == "" {
 			fmt.Println("Worker", worker.Worker_ID, "is available.")
+			//should i add available workers to a list and then assign jobs to them?
 		} else {
 			fmt.Println("Worker", worker.Worker_ID, "is currently working on job", worker.Current_Job_ID)
 		}
