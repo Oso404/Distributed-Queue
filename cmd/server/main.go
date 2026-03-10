@@ -7,25 +7,32 @@ import (
 	"net/http"
 
 	job "github.com/Oso404/distributed-queue/internal/job"
-	internal "github.com/Oso404/distributed-queue/internal/queue"
-
 	pool "github.com/Oso404/distributed-queue/internal/pool"
+	internal "github.com/Oso404/distributed-queue/internal/queue"
+	// "github.com/Oso404/distributed-queue/internal/worker"
 )
 
 var dq *internal.Queue
 
 func main() {
 	dq := internal.Create_Queue("Queue1")
-	//create pool of workers
+	// create pool of workers
 	// for i := 0; i < 10; i++ {
 	// 	w := worker.Create_Worker()
 	// 	go w.Start(dq)
 	// }
 
 	//create pool of workers
+
 	pool := pool.Create_Pool()
+
+	// scheduler_service := scheduler.Create_Scheduler(dq, pool)
+	// _ = scheduler_service //leave for now
+
 	pool.Start(dq)
 	pool.Show_Workers()
+	// fmt.Println("Pool of workers started")
+
 	// _=worker.Create_Worker()
 
 	/*
