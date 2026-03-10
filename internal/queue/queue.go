@@ -62,7 +62,7 @@ func (q *Queue) Dequeue() *job.Job {
 	//VisibilityDeadline important helps us keep track if job is alive! (Maybe worker crashed which is why its taking forever; we have no way of finding out)
 	job.StartTime = time.Now()
 	job.VisibilityDeadline = time.Now().Add(10 * time.Second)
-	fmt.Println("Job Dequeued at", job.StartTime, "and has deadline at", job.VisibilityDeadline)
+	// fmt.Println("Job Dequeued at", job.StartTime, "and has deadline at", job.VisibilityDeadline)
 
 	return job
 }
@@ -90,6 +90,12 @@ func (q *Queue) HandleJobCompletion(j *job.Job, workerID string) {
 			fmt.Printf("Job %s failed by worker %s → retry %d\n", j.ID, workerID, j.Retries)
 		}
 	}
+}
+
+func (q *Queue) JobAvailable() bool {
+	q.Mutex.Lock()
+	defer q.Mutex.Unlock()
+	return len(q.PendingQueue) > 0
 }
 
 /*

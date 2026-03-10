@@ -6,13 +6,15 @@ import (
 	"math/rand"
 	"time"
 
+	// Scheduler "github.com/Oso404/distributed-queue/cmd/scheduler"
+
 	internal "github.com/Oso404/distributed-queue/internal/queue"
 	"github.com/google/uuid"
 )
 
 type Worker struct {
 	Worker_ID      string
-	Current_Job_ID string
+	Current_Job_ID string //will be used to track which job worker is currently working on; if empty string then worker is idle
 }
 
 func Create_Worker() *Worker {
@@ -61,10 +63,12 @@ func (worker *Worker) Start(queue *internal.Queue) {
 			// fmt.Println(worker.Worker_ID, "resting for one second...")
 			continue
 		}
-		fmt.Printf("Worker %s got job %s\n", worker.Worker_ID, j.ID)
+		worker.Current_Job_ID = j.ID
+		// fmt.Printf("Worker %s got job %s\n", worker.Worker_ID, j.ID)
 		//cant perform actual job rn so will simulate with random number
 		jobDuration := time.Duration(rand.Intn(15)) * time.Second
-		fmt.Println(worker.Worker_ID, "works for", jobDuration)
+		// fmt.Println(worker.Worker_ID, "works for", jobDuration)
+		fmt.Printf("Worker %s is processing job %s with duration %s\n", worker.Worker_ID, j.ID, jobDuration)
 
 		// time.Sleep(jobDuration)
 
@@ -92,6 +96,42 @@ func (worker *Worker) Start(queue *internal.Queue) {
 		// }
 
 		//send job back to queue
+		worker.Current_Job_ID = "" //reset worker to idle
 		queue.HandleJobCompletion(j, worker.Worker_ID)
+
 	}
+
+	//will assume worker has a job and will perform job for random amount of time
+
 }
+
+// func (worker *Worker) _Start(job *j.Job, scheduler *Scheduler.Scheduler) {
+// 	worker.Current_Job_ID = job.ID
+// 	// fmt.Printf("Worker %s got job %s\n", worker.Worker_ID, j.ID)
+// 	//cant perform actual job rn so will simulate with random number
+// 	jobDuration := time.Duration(rand.Intn(15)) * time.Second
+// 	// fmt.Println(worker.Worker_ID, "works for", jobDuration)
+// 	fmt.Printf("Worker %s is processing job %s with duration %s\n", worker.Worker_ID, job.ID, jobDuration)
+
+// 	// time.Sleep(jobDuration)
+
+// 	//visibility deadline set in dequeue() so we can use that to check if job is still alive
+// 	ctx_with_deadline, cancel := context.WithDeadline(context.Background(), job.VisibilityDeadline)
+// 	defer cancel()
+// 	select {
+// 	//will we reach deadline before we finish job?
+// 	case <-ctx_with_deadline.Done():
+// 		fmt.Println("Job", job.ID, "has exceeded visibility deadline and is considered failed.")
+// 		job.Status = "failed"
+// 		//willl job complete before deadline?
+// 	case <-time.After(jobDuration):
+// 		fmt.Println("Worker", worker.Worker_ID, "finished job", job.ID)
+// 		job.Status = "completed"
+// 	}
+// 	worker.Current_Job_ID = "" //reset worker to idle
+
+// 	// queue.HandleJobCompletion(j, worker.Worker_ID)
+
+// 	//i have to pass the job back to the scheduler
+
+// }
