@@ -8,7 +8,8 @@ import (
 
 	job "github.com/Oso404/distributed-queue/internal/job"
 	internal "github.com/Oso404/distributed-queue/internal/queue"
-	worker "github.com/Oso404/distributed-queue/internal/worker"
+
+	pool "github.com/Oso404/distributed-queue/internal/pool"
 )
 
 var dq *internal.Queue
@@ -16,21 +17,23 @@ var dq *internal.Queue
 func main() {
 	dq := internal.Create_Queue("Queue1")
 	//create pool of workers
-	for i := 0; i < 10; i++ {
-		w := worker.Create_Worker()
-		go w.Start(dq)
-	}
+	// for i := 0; i < 10; i++ {
+	// 	w := worker.Create_Worker()
+	// 	go w.Start(dq)
+	// }
+
+	//create pool of workers
+	pool := pool.Create_Pool()
+	pool.Start(dq)
+	pool.Show_Workers()
+	// _=worker.Create_Worker()
+
 	/*
 		HandleFunc registers a handler function and runs whenever someone visits URL path (e.g."/")
 		HandleFunc takes in URL pattern and function to run when visited
 		ResponseWriter allows to write a response back to client
 		Request contains metadata about incoming HTTP request
 	*/
-	//sample handler function for demonstration
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello, world! The server is running.")
-	})
-
 	http.HandleFunc("/enqueue", func(w http.ResponseWriter, r *http.Request) {
 		//check to see that method is POST
 		if r.Method != http.MethodPost {
